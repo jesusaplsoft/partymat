@@ -24,7 +24,7 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 /**
  * Entry point classes define <code>onModuleLoad()</code>.
  */
-public class PartyMatLogin
+public class PartyMat
     implements EntryPoint {
 
     /**
@@ -164,11 +164,7 @@ public class PartyMatLogin
                 sendButton.setEnabled(false);
                 textToServerLabel.setText(textToServer);
                 serverResponseLabel.setText("");
-<<<<<<< HEAD
-                PartyMatLogin.this.greetingService.greetServer(textToServer,
-=======
                 PartyMat.this.greetingService.greetServer(textToServer,
->>>>>>> 49d7dc0b0a62bfd389f38163a3060718a9eac398
                     new AsyncCallback<String>() {
                         @Override
                         public void onFailure(final Throwable caught) {
@@ -177,12 +173,8 @@ public class PartyMatLogin
                                 "Remote Procedure Call - Failure");
                             serverResponseLabel.addStyleName(
                                 "serverResponseLabelError");
-<<<<<<< HEAD
                             serverResponseLabel.setHTML(
-                                PartyMatLogin.SERVER_ERROR);
-=======
-                            serverResponseLabel.setHTML(PartyMat.SERVER_ERROR);
->>>>>>> 49d7dc0b0a62bfd389f38163a3060718a9eac398
+                                PartyMat.SERVER_ERROR);
                             dialogBox.center();
                             closeButton.setFocus(true);
                         }
