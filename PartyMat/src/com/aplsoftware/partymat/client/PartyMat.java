@@ -9,7 +9,6 @@ import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.event.dom.client.KeyUpHandler;
-import com.google.gwt.i18n.client.HasDirection.Direction;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.DialogBox;
@@ -52,7 +51,7 @@ public class PartyMat
         sendButton.setText("Ok");
 
         final TextBox pinField = new TextBox();
-        pinField.setDirection(Direction.LTR);
+// pinField.setDirection(Direction.LTR);
         // We can add style names to widgets
         sendButton.addStyleName("sendButton");
 
