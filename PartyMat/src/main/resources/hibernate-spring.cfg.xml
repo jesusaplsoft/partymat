@@ -1,0 +1,19 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE hibernate-configuration PUBLIC
+          "-//Hibernate/Hibernate Configuration DTD 3.0//EN"
+          "http://www.hibernate.org/dtd/hibernate-configuration-3.0.dtd">
+<hibernate-configuration>
+    <session-factory>
+        <property name="hibernate.query.startup_check">false</property>
+        <property name="max_fetch_depth">1</property>
+		<property name="cache.use_second_level_cache">true</property>
+        <property name="cache.use_query_cache">true</property>
+        <property name="cache.provider_class">org.hibernate.cache.HashtableCacheProvider</property>
+    </session-factory>
+</hibernate-configuration>
+<!-- 
+<property name="max_fetch_depth">1</property>
+        <property name="default-lazy">true</property>     
+        
+       
+ -->

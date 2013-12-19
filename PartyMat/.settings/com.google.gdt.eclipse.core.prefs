@@ -1,3 +1,5 @@
 eclipse.preferences.version=1
-warSrcDir=war
-warSrcDirIsOutput=true
+jarsExcludedFromWebInfLib=
+lastWarOutDir=C\:/Users/jesus/git/partymat/PartyMat/target/PartyMat-1.0.0
+warSrcDir=src/main/webapp
+warSrcDirIsOutput=false
