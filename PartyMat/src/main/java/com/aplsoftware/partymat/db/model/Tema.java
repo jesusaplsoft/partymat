@@ -3,23 +3,23 @@ package com.aplsoftware.partymat.db.model;
 import com.apl.base.model.AbstractPersistent;
 import com.apl.base.model.FindValue;
 
-import com.gexcat.gex.cfg.Campo;
+import com.aplsoftware.partymat.cfg.Campo;
 
-import java.util.HashSet;
-import java.util.Set;
+import org.hibernate.annotations.DynamicInsert;
+import org.hibernate.annotations.DynamicUpdate;
+import org.hibernate.annotations.ForeignKey;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
+import org.hibernate.annotations.OptimisticLocking;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
@@ -29,16 +29,10 @@ import javax.validation.constraints.Digits;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
-import org.hibernate.annotations.DynamicInsert;
-import org.hibernate.annotations.DynamicUpdate;
-import org.hibernate.annotations.ForeignKey;
-import org.hibernate.annotations.OnDelete;
-import org.hibernate.annotations.OnDeleteAction;
-import org.hibernate.annotations.OptimisticLocking;
-
 
 @DynamicInsert
 @DynamicUpdate
+@Entity
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @OptimisticLocking
 @Table(name = "TEMA", uniqueConstraints = {
@@ -47,7 +41,6 @@ import org.hibernate.annotations.OptimisticLocking;
                 "CAPITULO"
             })
     })
-@Entity
 @org.hibernate.annotations.Table(appliesTo = "TEMA",
     comment = "Temas de la Asignatura")
 public class Tema
@@ -55,8 +48,11 @@ public class Tema
 
     @Transient
     private static final long serialVersionUID = -1556520611763127408L;
-	private static final String[] EQUAL_FIELDS = { "id", "asignatura",
-			"capitulo" };
+    private static final String[] EQUAL_FIELDS = {
+        "id",
+        "asignatura",
+        "capitulo"
+    };
 
     @Column(name = "ID", nullable = false)
     @GeneratedValue(strategy = GenerationType.AUTO, generator = "genTemaId")
@@ -75,16 +71,6 @@ public class Tema
     @Digits(integer = Campo.TEMA_INT, fraction = Campo.TEMA_DEC)
     @NotNull
     private Integer capitulo;
-
-    @ForeignKey(name = "TET_FK_TEMA", inverseName = "TET_FK_ETIQUETA")
-    @JoinTable(name = "TEMA_ETIQUETA", joinColumns = {
-            @JoinColumn(name = "TEMA_ID", nullable = false)
-        },
-        inverseJoinColumns = @JoinColumn(name = "ETIQUETA_ID", nullable = false))
-    @ManyToMany(cascade = { CascadeType.MERGE, CascadeType.REMOVE },
-        fetch = FetchType.EAGER)
-// @NotAudited
-    private Set<Etiqueta> etiquetas;
 
     @ForeignKey(name = "TEM_FK_ASIGNATURA")
     @JoinColumn(name = "ASIGNATURA_ID", nullable = false)
@@ -110,46 +96,12 @@ public class Tema
     }
 
     public Tema(final Asignatura asi, final Integer capitulo) {
-        setAsignatura(asi);
-        setCapitulo(capitulo);
-    }
-
-    public Set<Etiqueta> getEtiquetas() {
-        return new HashSet<Etiqueta>(etiquetas);
-    }
-
-    public void setEtiquetas(final Set<Etiqueta> etiquetas) {
-
-        if (this.etiquetas == null) {
-            this.etiquetas = new HashSet<Etiqueta>(etiquetas);
-        } else {
-            this.etiquetas.retainAll(etiquetas);
-        }
-    }
-
-    public boolean addEtiqueta(final Etiqueta etiqueta) {
-
-        if (etiquetas == null) {
-            etiquetas = new HashSet<Etiqueta>();
-        }
-
-        return etiquetas.add(etiqueta);
-    }
-
-    public boolean removeEtiqueta(final Etiqueta etiqueta) {
-        boolean retorno;
-
-        if (etiquetas == null) {
-            retorno = false;
-        } else {
-            retorno = etiquetas.remove(etiqueta);
-        }
-
-        return retorno;
+        this.setAsignatura(asi);
+        this.setCapitulo(capitulo);
     }
 
     public Asignatura getAsignatura() {
-        return asignatura;
+        return this.asignatura;
     }
 
     public final void setAsignatura(final Asignatura asignatura) {
@@ -157,7 +109,7 @@ public class Tema
     }
 
     public String getTitulo() {
-        return titulo;
+        return this.titulo;
     }
 
     public void setTitulo(final String titulo) {
@@ -165,7 +117,7 @@ public class Tema
     }
 
     public Integer getCapitulo() {
-        return capitulo;
+        return this.capitulo;
     }
 
     public final void setCapitulo(final Integer capitulo) {
@@ -174,7 +126,7 @@ public class Tema
 
     @Override
     public Long getId() {
-        return id;
+        return this.id;
     }
 
     @Override
@@ -189,7 +141,7 @@ public class Tema
 
     @Override
     protected String[] equalizer() {
-        return EQUAL_FIELDS;
+        return Tema.EQUAL_FIELDS;
     }
 
     @Override

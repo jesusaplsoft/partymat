@@ -1,5 +1,41 @@
 package com.aplsoftware.partymat.db.model;
 
+import com.apl.base.annotation.ByDefault;
+import com.apl.base.annotation.Default;
+import com.apl.base.model.AbstractPersistent;
+import com.apl.base.model.FindValue;
+import com.apl.base.type.EnumType;
+
+import com.aplsoftware.partymat.cfg.Campo;
+import com.aplsoftware.partymat.db.model.image.PreguntaImagen;
+import com.aplsoftware.partymat.db.model.type.TipoPregunta;
+
+import org.apache.solr.analysis.ASCIIFoldingFilterFactory;
+import org.apache.solr.analysis.LowerCaseFilterFactory;
+import org.apache.solr.analysis.PhoneticFilterFactory;
+import org.apache.solr.analysis.SnowballPorterFilterFactory;
+import org.apache.solr.analysis.StandardTokenizerFactory;
+import org.apache.solr.analysis.StopFilterFactory;
+
+import org.hibernate.annotations.DynamicInsert;
+import org.hibernate.annotations.DynamicUpdate;
+import org.hibernate.annotations.ForeignKey;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
+import org.hibernate.annotations.OptimisticLocking;
+import org.hibernate.annotations.Parameter;
+import org.hibernate.annotations.Type;
+
+import org.hibernate.search.annotations.Analyzer;
+import org.hibernate.search.annotations.AnalyzerDef;
+import org.hibernate.search.annotations.DocumentId;
+import org.hibernate.search.annotations.Field;
+import org.hibernate.search.annotations.Index;
+import org.hibernate.search.annotations.Indexed;
+import org.hibernate.search.annotations.Store;
+import org.hibernate.search.annotations.TokenFilterDef;
+import org.hibernate.search.annotations.TokenizerDef;
+
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -22,63 +58,48 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import javax.persistence.UniqueConstraint;
+
 import javax.validation.constraints.Digits;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
-import org.apache.solr.analysis.ASCIIFoldingFilterFactory;
-import org.apache.solr.analysis.LowerCaseFilterFactory;
-import org.apache.solr.analysis.PhoneticFilterFactory;
-import org.apache.solr.analysis.SnowballPorterFilterFactory;
-import org.apache.solr.analysis.StandardTokenizerFactory;
-import org.apache.solr.analysis.StopFilterFactory;
-import org.hibernate.annotations.DynamicInsert;
-import org.hibernate.annotations.DynamicUpdate;
-import org.hibernate.annotations.ForeignKey;
-import org.hibernate.annotations.OnDelete;
-import org.hibernate.annotations.OnDeleteAction;
-import org.hibernate.annotations.OptimisticLocking;
-import org.hibernate.annotations.Parameter;
-import org.hibernate.annotations.Type;
-import org.hibernate.search.annotations.Analyzer;
-import org.hibernate.search.annotations.AnalyzerDef;
-import org.hibernate.search.annotations.DocumentId;
-import org.hibernate.search.annotations.Field;
-import org.hibernate.search.annotations.Index;
-import org.hibernate.search.annotations.Indexed;
-import org.hibernate.search.annotations.Store;
-import org.hibernate.search.annotations.TokenFilterDef;
-import org.hibernate.search.annotations.TokenizerDef;
-
-import com.apl.base.annotation.ByDefault;
-import com.apl.base.annotation.Default;
-import com.apl.base.model.AbstractPersistent;
-import com.apl.base.model.FindValue;
-import com.apl.base.type.EnumType;
-import com.gexcat.gex.cfg.Campo;
-import com.gexcat.gex.model.image.PreguntaImagen;
-import com.gexcat.gex.model.type.TipoPregunta;
-
 
 // @Audited
 @Analyzer(definition = "gexcatAnalyzer")
-@AnalyzerDef(name = "gexcatAnalyzer",
-// tokenizer = @TokenizerDef(factory = StandardTokenizerFactory.class), filters
-// = {
-// @TokenFilterDef(factory = LowerCaseFilterFactory.class),
-// @TokenFilterDef(factory = SnowballPorterFilterFactory.class, params = {
-// @Parameter(name = "language", value = "English") }) })
-tokenizer = @TokenizerDef(factory = StandardTokenizerFactory.class), filters = {
+@AnalyzerDef(name = "gexcatAnalyzer", // @TokenFilterDef(factory =
+// LowerCaseFilterFactory.class),
+// @TokenFilterDef(factory =
+// SnowballPorterFilterFactory.class,
+// params = { @Parameter(name = "language",
+// value = "English") }) })
+    tokenizer = @TokenizerDef(factory = StandardTokenizerFactory.class),
+    filters = {
         @TokenFilterDef(factory = ASCIIFoldingFilterFactory.class),
         @TokenFilterDef(factory = LowerCaseFilterFactory.class),
-        @TokenFilterDef(factory = StopFilterFactory.class, params = {
-                @org.hibernate.search.annotations.Parameter(name = "words", value = "search/stop_es.txt"),
-                @org.hibernate.search.annotations.Parameter(name = "ignoreCase", value = "true"),
-                @org.hibernate.search.annotations.Parameter(name = "enablePositionIncrements", value = "true") }),
-        @TokenFilterDef(factory = PhoneticFilterFactory.class, params = { @org.hibernate.search.annotations.Parameter(name = "encoder", value = "DoubleMetaphone") }),
-        @TokenFilterDef(factory = SnowballPorterFilterFactory.class, params = {
-                @org.hibernate.search.annotations.Parameter(name = "language", value = "Spanish"),
-                @org.hibernate.search.annotations.Parameter(name = "ignoreCase", value = "true") }) })
+        @TokenFilterDef(factory = StopFilterFactory.class,
+            params = {
+                @org.hibernate.search.annotations.Parameter(name = "words",
+                    value = "search/stop_es.txt"),
+                @org.hibernate.search.annotations.Parameter(name = "ignoreCase",
+                    value = "true"),
+                @org.hibernate.search.annotations.Parameter(name =
+                        "enablePositionIncrements", value = "true")
+            }),
+        @TokenFilterDef(
+            factory = PhoneticFilterFactory.class,
+            params = {
+                @org.hibernate.search.annotations.Parameter(name = "encoder",
+                    value = "DoubleMetaphone")
+            }
+        ),
+        @TokenFilterDef(factory = SnowballPorterFilterFactory.class,
+            params = {
+                @org.hibernate.search.annotations.Parameter(name = "language",
+                    value = "Spanish"),
+                @org.hibernate.search.annotations.Parameter(name = "ignoreCase",
+                    value = "true")
+            })
+    })
 @DynamicInsert
 @DynamicUpdate
 @Entity
@@ -152,14 +173,6 @@ public class Pregunta
     @ManyToMany(cascade = { CascadeType.DETACH }, fetch = FetchType.EAGER)
     private Set<Tema> temas;
 
-    @ForeignKey(name = "PET_FK_ETIQUETA", inverseName = "PET_FK_PREGUNTA")
-    @JoinTable(name = "PREGUNTA_ETIQUETA", joinColumns = {
-            @JoinColumn(name = "ETIQUETA_ID", nullable = false)
-        },
-        inverseJoinColumns = @JoinColumn(name = "PREGUNTA_ID", nullable = false))
-    @ManyToMany(cascade = { CascadeType.ALL }, fetch = FetchType.EAGER)
-    private Set<Etiqueta> etiquetas;
-
     @Column(name = "OBSERVACIONES", length = Campo.OBSERVACIONES)
 // @Field(index = Index.NO, store = Store.NO)
     @Size(max = Campo.OBSERVACIONES)
@@ -169,10 +182,6 @@ public class Pregunta
     @Field(index = Index.NO, store = Store.NO)
     @Size(max = Campo.NOMBRE)
     private String profesor;
-
-    @OneToMany(mappedBy = "pregunta", fetch = FetchType.EAGER,
-        cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<Solucion> soluciones;
 
     /**
      * <p>Se utiliza para combinar preguntas junto con el código del
@@ -200,23 +209,23 @@ public class Pregunta
     @NotNull
     private Integer estadisticaTotal;
 
-	@Column(name = "BASICA")
-	@Default(value = BT_FALSE, groups = ByDefault.class)
-	@NotNull
-	@Type(type = BOOLEAN_TYPE)
-	private Boolean basica;
-	
-	@Column(name = "ES_BARAJAR")
-	@Default(value = BT_TRUE, groups = ByDefault.class)
-	@NotNull
-	@Type(type = BOOLEAN_TYPE)
-	private Boolean barajar;
-	
-	@Column(name = "ES_LATEX")
-	@Default(value = BT_FALSE, groups = ByDefault.class)
-	@NotNull
-	@Type(type = BOOLEAN_TYPE)
-	private Boolean latex;
+    @Column(name = "BASICA")
+    @Default(value = AbstractPersistent.BT_FALSE, groups = ByDefault.class)
+    @NotNull
+    @Type(type = AbstractPersistent.BOOLEAN_TYPE)
+    private Boolean basica;
+
+    @Column(name = "ES_BARAJAR")
+    @Default(value = AbstractPersistent.BT_TRUE, groups = ByDefault.class)
+    @NotNull
+    @Type(type = AbstractPersistent.BOOLEAN_TYPE)
+    private Boolean barajar;
+
+    @Column(name = "ES_LATEX")
+    @Default(value = AbstractPersistent.BT_FALSE, groups = ByDefault.class)
+    @NotNull
+    @Type(type = AbstractPersistent.BOOLEAN_TYPE)
+    private Boolean latex;
 
     public Pregunta() {
         super();
@@ -233,9 +242,9 @@ public class Pregunta
     public Pregunta(final Long id) {
         super(id);
     }
-    
-	public String getProfesor() {
-        return profesor;
+
+    public String getProfesor() {
+        return this.profesor;
     }
 
     public void setProfesor(final String profesor) {
@@ -243,7 +252,7 @@ public class Pregunta
     }
 
     public Long getIdentificador() {
-        return identificador;
+        return this.identificador;
     }
 
     public void setIdentificador(final Long identificador) {
@@ -252,7 +261,7 @@ public class Pregunta
 
     @Override
     public Long getId() {
-        return id;
+        return this.id;
     }
 
     @Override
@@ -261,60 +270,61 @@ public class Pregunta
     }
 
     public String getCuestion() {
-        return cuestion;
+        return this.cuestion;
     }
 
     public void setCuestion(final String cuestion) {
         this.cuestion = cuestion;
     }
-    
-    public boolean isLatex(){
-    	return is(latex, false);
-    }
-	public Boolean getLatex() {
-		return latex;
-	}
 
-	public void setLatex(final Boolean latex) {
-		this.latex = latex;
-	}
+    public boolean isLatex() {
+        return this.is(this.latex, false);
+    }
+
+    public Boolean getLatex() {
+        return this.latex;
+    }
+
+    public void setLatex(final Boolean latex) {
+        this.latex = latex;
+    }
 
     public void setImagen(final PreguntaImagen imagen) {
 
-        if (imagenes == null) {
-            imagenes = new ArrayList<PreguntaImagen>();
+        if (this.imagenes == null) {
+            this.imagenes = new ArrayList<PreguntaImagen>();
         }
 
         if (imagen == null) {
-            imagenes.clear();
+            this.imagenes.clear();
         } else {
             imagen.setPregunta(this);
-            imagenes.clear();
-            imagenes.add(imagen);
+            this.imagenes.clear();
+            this.imagenes.add(imagen);
         }
     }
 
     public PreguntaImagen getImagen() {
 
-        if (imagenes == null) {
-            imagenes = new ArrayList<PreguntaImagen>();
+        if (this.imagenes == null) {
+            this.imagenes = new ArrayList<PreguntaImagen>();
         }
 
-        if (imagenes.size() == 0) {
+        if (this.imagenes.size() == 0) {
             return null;
         } else {
-            return imagenes.get(0);
+            return this.imagenes.get(0);
         }
     }
 
     public Set<Respuesta> getRespuestas() {
 
-        if (respuestas == null) {
+        if (this.respuestas == null) {
             return null;
         } else {
             final Set<Respuesta> aux = new TreeSet<Respuesta>(
                     Respuesta.COMPARATOR);
-            aux.addAll(respuestas);
+            aux.addAll(this.respuestas);
             return aux;
         }
     }
@@ -327,12 +337,13 @@ public class Pregunta
                 this.respuestas = new HashSet<Respuesta>(respuestas);
             }
         } else {
-            copyObjects(respuestas, this.respuestas);
+            this.copyObjects(respuestas, this.respuestas);
         }
     }
 
     /**
-     * @see  Asignatura.copyObjects(Set<Tema>, Set<Tema>)
+     * @param  froms  conjunto de respuestas a copiar
+     * @param  tos    conjunto de respuestas destino
      */
     public void copyObjects(final Set<Respuesta> froms,
             final Set<Respuesta> tos) {
@@ -346,7 +357,8 @@ public class Pregunta
 
                     if (toRespuesta.equals(fromRespuesta)) {
 
-                        toRespuesta = (Respuesta) copyObject(fromRespuesta,
+                        toRespuesta = (Respuesta) AbstractPersistent.copyObject(
+                                fromRespuesta,
                                 toRespuesta,
                                 "texto",
                                 "imagenes",
@@ -364,7 +376,7 @@ public class Pregunta
     }
 
     public String getObservaciones() {
-        return observaciones;
+        return this.observaciones;
     }
 
     public void setObservaciones(final String observaciones) {
@@ -372,7 +384,7 @@ public class Pregunta
     }
 
     public Integer getDificultad() {
-        return dificultad;
+        return this.dificultad;
     }
 
     public void setDificultad(final Integer dificultad) {
@@ -381,10 +393,10 @@ public class Pregunta
 
     public Set<Tema> getTemas() {
 
-        if (temas == null) {
+        if (this.temas == null) {
             return null;
         } else {
-            return new HashSet<Tema>(temas);
+            return new HashSet<Tema>(this.temas);
         }
     }
 
@@ -403,29 +415,8 @@ public class Pregunta
         }
     }
 
-    public Solucion getSolucion() {
-        return getOne(soluciones);
-    }
-
-    public void setSolucion(final Solucion sol) {
-
-        if (sol != null) {
-            sol.setPregunta(this);
-        }
-
-        soluciones = setOne(soluciones, sol);
-    }
-
-    public void setEtiquetas(final Set<Etiqueta> etiquetas) {
-        this.etiquetas = etiquetas;
-    }
-
-    public Set<Etiqueta> getEtiquetas() {
-        return etiquetas;
-    }
-
     public TipoPregunta getTipo() {
-        return tipo;
+        return this.tipo;
     }
 
     public void setTipo(final TipoPregunta tipo) {
@@ -433,7 +424,7 @@ public class Pregunta
     }
 
     public Integer getEstadisticaAcierto() {
-        return estadisticaAcierto;
+        return this.estadisticaAcierto;
     }
 
     public void setEstadisticaAcierto(final Integer estadisticaAcierto) {
@@ -441,37 +432,37 @@ public class Pregunta
     }
 
     public Integer getEstadisticaTotal() {
-        return estadisticaTotal;
+        return this.estadisticaTotal;
     }
 
     public void setEstadisticaTotal(final Integer estadisticaTotal) {
         this.estadisticaTotal = estadisticaTotal;
     }
 
-	public Boolean getBasica() {
-		return basica;
-	}
+    public Boolean getBasica() {
+        return this.basica;
+    }
 
-	public void setBasica(final Boolean basica) {
-		this.basica = basica;
-	}
-	
-	public Boolean getBarajar() {
-		return barajar;
-	}
+    public void setBasica(final Boolean basica) {
+        this.basica = basica;
+    }
 
-	public void setBarajar(final Boolean barajar) {
-		this.barajar = barajar;
-	}
+    public Boolean getBarajar() {
+        return this.barajar;
+    }
 
-	@Override
+    public void setBarajar(final Boolean barajar) {
+        this.barajar = barajar;
+    }
+
+    @Override
     public String getParent() {
         return null;
     }
 
     @Override
     protected String[] equalizer() {
-        return EQUAL_FIELDS;
+        return Pregunta.EQUAL_FIELDS;
     }
 
     @Override

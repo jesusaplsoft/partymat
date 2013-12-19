@@ -6,8 +6,16 @@ import com.apl.base.model.AbstractPersistent;
 import com.apl.base.model.FindValue;
 import com.apl.base.tool.MiscBase;
 
-import com.gexcat.gex.cfg.Campo;
-import com.gexcat.gex.model.image.RespuestaImagen;
+import com.aplsoftware.partymat.cfg.Campo;
+import com.aplsoftware.partymat.db.model.image.RespuestaImagen;
+
+import org.hibernate.annotations.DynamicInsert;
+import org.hibernate.annotations.DynamicUpdate;
+import org.hibernate.annotations.ForeignKey;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
+import org.hibernate.annotations.OptimisticLocking;
+import org.hibernate.annotations.Type;
 
 import java.io.Serializable;
 
@@ -35,18 +43,11 @@ import javax.validation.constraints.Digits;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
-import org.hibernate.annotations.DynamicInsert;
-import org.hibernate.annotations.DynamicUpdate;
-import org.hibernate.annotations.ForeignKey;
-import org.hibernate.annotations.OnDelete;
-import org.hibernate.annotations.OnDeleteAction;
-import org.hibernate.annotations.OptimisticLocking;
-import org.hibernate.annotations.Type;
-
 
 // @Audited
 @DynamicInsert
 @DynamicUpdate
+@Entity
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @OptimisticLocking
 @Table(name = "RESPUESTA", uniqueConstraints = {
@@ -55,7 +56,6 @@ import org.hibernate.annotations.Type;
                 "ORDEN"
             })
     })
-@Entity
 @org.hibernate.annotations.Table(appliesTo = "RESPUESTA",
     comment = "Posible Respuesta de la Pregunta planteada")
 public class Respuesta
@@ -88,9 +88,9 @@ public class Respuesta
 // @Column(name = "ES_CORRECTA",
 // columnDefinition = ColumnDefinition.RES_ES_CORRECTA)
     @Column(name = "ES_CORRECTA", nullable = false)
-    @Default(value = BT_FALSE, groups = ByDefault.class)
+    @Default(value = AbstractPersistent.BT_FALSE, groups = ByDefault.class)
     @NotNull
-    @Type(type = BOOLEAN_TYPE)
+    @Type(type = AbstractPersistent.BOOLEAN_TYPE)
     private Boolean correcta;
 
     @Column(name = "ORDEN",
@@ -100,12 +100,12 @@ public class Respuesta
 // @NotAudited
     @NotNull
     private Integer orden;
-    
+
     @Column(name = "ES_LATEX")
-	@Default(value = BT_FALSE, groups = ByDefault.class)
-	@NotNull
-	@Type(type = BOOLEAN_TYPE)
-	private Boolean latex;
+    @Default(value = AbstractPersistent.BT_FALSE, groups = ByDefault.class)
+    @NotNull
+    @Type(type = AbstractPersistent.BOOLEAN_TYPE)
+    private Boolean latex;
 
     @ForeignKey(name = "RES_FK_PREGUNTA")
     @JoinColumn(name = "PREGUNTA_ID", nullable = false)
@@ -138,15 +138,15 @@ public class Respuesta
             final Integer orden,
             final String texto,
             final Boolean correcto) {
-        setPregunta(pre);
-        setOrden(orden);
-        setTexto(texto);
-        setCorrecta(correcto);
+        this.setPregunta(pre);
+        this.setOrden(orden);
+        this.setTexto(texto);
+        this.setCorrecta(correcto);
 
     }
 
     public Integer getOrden() {
-        return orden;
+        return this.orden;
     }
 
     public final void setOrden(final Integer orden) {
@@ -154,11 +154,11 @@ public class Respuesta
     }
 
     public Pregunta getPregunta() {
-        return pregunta;
+        return this.pregunta;
     }
 
     public Long getPreguntaId() {
-        return getEntityId(pregunta);
+        return this.getEntityId(this.pregunta);
     }
 
     public final void setPregunta(final Pregunta pregunta) {
@@ -166,16 +166,16 @@ public class Respuesta
     }
 
     public Boolean getCorrecta() {
-        return correcta;
+        return this.correcta;
     }
 
     public boolean isCorrecta() {
-        return correcta;
+        return this.correcta;
     }
 
-	@Override
+    @Override
     public Long getId() {
-        return id;
+        return this.id;
     }
 
     @Override
@@ -184,7 +184,7 @@ public class Respuesta
     }
 
     public String getTexto() {
-        return texto;
+        return this.texto;
     }
 
     public final void setTexto(final String texto) {
@@ -194,58 +194,59 @@ public class Respuesta
     public final void setCorrecta(final Boolean correcta) {
         this.correcta = correcta;
     }
-    
-    public boolean isLatex(){
-    	return is(latex, false);
-    }
-	public Boolean getLatex() {
-		return latex;
-	}
 
-	public void setLatex(final Boolean latex) {
-		this.latex = latex;
-	}
+    public boolean isLatex() {
+        return this.is(this.latex, false);
+    }
+
+    public Boolean getLatex() {
+        return this.latex;
+    }
+
+    public void setLatex(final Boolean latex) {
+        this.latex = latex;
+    }
 
     public void setImagen(final RespuestaImagen imagen) {
 
-        if (imagenes == null) {
-            imagenes = new ArrayList<RespuestaImagen>();
+        if (this.imagenes == null) {
+            this.imagenes = new ArrayList<RespuestaImagen>();
         }
 
         if (imagen == null) {
-            imagenes.clear();
+            this.imagenes.clear();
         } else {
             imagen.setRespuesta(this);
-            imagenes.clear();
-            imagenes.add(imagen);
+            this.imagenes.clear();
+            this.imagenes.add(imagen);
         }
     }
 
     public RespuestaImagen getImagen() {
 
-        if ((imagenes == null) || (imagenes.size() == 0)) {
+        if ((this.imagenes == null) || (this.imagenes.size() == 0)) {
             return null;
         } else {
-            return imagenes.get(0);
+            return this.imagenes.get(0);
         }
     }
-    
+
     public List<RespuestaImagen> getImagenes() {
-		return imagenes;
-	}
+        return this.imagenes;
+    }
 
-	public void setImagenes(final List<RespuestaImagen> imagenes) {
-		this.imagenes = imagenes;
-	}
+    public void setImagenes(final List<RespuestaImagen> imagenes) {
+        this.imagenes = imagenes;
+    }
 
-	@Override
+    @Override
     public String getParent() {
         return "pregunta";
     }
 
     @Override
     protected String[] equalizer() {
-        return EQUAL_FIELDS;
+        return Respuesta.EQUAL_FIELDS;
     }
 
     @Override

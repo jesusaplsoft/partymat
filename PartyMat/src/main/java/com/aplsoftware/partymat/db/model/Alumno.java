@@ -1,5 +1,24 @@
 package com.aplsoftware.partymat.db.model;
 
+import com.apl.base.annotation.ByDefault;
+import com.apl.base.annotation.Default;
+import com.apl.base.model.AbstractAuditablePersistent;
+import com.apl.base.model.AbstractPersistent;
+import com.apl.base.model.Auditable;
+import com.apl.base.model.FindValue;
+import com.apl.base.type.EnumType;
+
+import com.aplsoftware.partymat.cfg.Campo;
+import com.aplsoftware.partymat.db.model.image.AlumnoImagen;
+import com.aplsoftware.partymat.db.model.type.TipoDomicilio;
+import com.aplsoftware.partymat.db.model.type.TipoSexo;
+
+import org.hibernate.annotations.DynamicInsert;
+import org.hibernate.annotations.DynamicUpdate;
+import org.hibernate.annotations.OptimisticLocking;
+import org.hibernate.annotations.Parameter;
+import org.hibernate.annotations.Type;
+
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
@@ -21,26 +40,10 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 import javax.persistence.UniqueConstraint;
+
 import javax.validation.constraints.Digits;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
-
-import org.hibernate.annotations.DynamicInsert;
-import org.hibernate.annotations.DynamicUpdate;
-import org.hibernate.annotations.OptimisticLocking;
-import org.hibernate.annotations.Parameter;
-import org.hibernate.annotations.Type;
-
-import com.apl.base.annotation.ByDefault;
-import com.apl.base.annotation.Default;
-import com.apl.base.model.AbstractAuditablePersistent;
-import com.apl.base.model.Auditable;
-import com.apl.base.model.FindValue;
-import com.apl.base.type.EnumType;
-import com.gexcat.gex.cfg.Campo;
-import com.gexcat.gex.model.image.AlumnoImagen;
-import com.gexcat.gex.model.type.TipoDomicilio;
-import com.gexcat.gex.model.type.TipoSexo;
 
 
 // @Audited
@@ -48,28 +51,30 @@ import com.gexcat.gex.model.type.TipoSexo;
 @DynamicUpdate
 @Entity
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+@NamedQueries(
+    value = {
+        @NamedQuery(name = Alumno.UPD_CURSO,
+            query =
+                "UPDATE AlumnoAsignatura SET curso.id = :cursoId WHERE id = :id"),
+    }
+)
 @OptimisticLocking
 @Table(name = "ALUMNO", uniqueConstraints = {
         @UniqueConstraint(name = "ALU_IDX_CLAVE", columnNames = { "DNI" }),
-		@UniqueConstraint(name = "ALU_IDX_NIU", columnNames = { "NIU" })
+        @UniqueConstraint(name = "ALU_IDX_NIU", columnNames = { "NIU" })
     })
 @org.hibernate.annotations.Table(appliesTo = "ALUMNO", comment = "Alumno",
     indexes = {
         @org.hibernate.annotations.Index(name = "ALU_IDX_NOMBRE",
             columnNames = { "APELLIDOS", "NOMBRE" })
     })
-@NamedQueries(
-	    value = {
-	        @NamedQuery(name = Alumno.UPD_CURSO,
-	            query = "UPDATE AlumnoAsignatura SET curso.id = :cursoId WHERE id = :id"),
-	    })
 public class Alumno
     extends AbstractAuditablePersistent<Auditable, Alumno> {
 
     @Transient
     private static final long serialVersionUID = -1556520611763127408L;
-    
-	public static final String UPD_CURSO = "updateCurso";
+
+    public static final String UPD_CURSO = "updateCurso";
 
     private static final String[] EQUAL_FIELDS = { "codigo" };
 
@@ -120,9 +125,9 @@ public class Alumno
     private String movil;
 
     @Column(name = "ENVIAR_CORREO")
-    @Default(value = BT_TRUE, groups = ByDefault.class)
+    @Default(value = AbstractPersistent.BT_TRUE, groups = ByDefault.class)
     @NotNull
-    @Type(type = BOOLEAN_TYPE)
+    @Type(type = AbstractPersistent.BOOLEAN_TYPE)
     private Boolean enviarCorreo;
 
     @Column(name = "CORREO", length = Campo.CORREO)
@@ -134,9 +139,9 @@ public class Alumno
     private String nacionalidad;
 
     @Column(name = "TRABAJA")
-    @Default(value = BT_FALSE, groups = ByDefault.class)
+    @Default(value = AbstractPersistent.BT_FALSE, groups = ByDefault.class)
     @NotNull
-    @Type(type = BOOLEAN_TYPE)
+    @Type(type = AbstractPersistent.BOOLEAN_TYPE)
     private Boolean trabaja;
 
     @Column(name = "EMPRESA", length = Campo.EMPRESA)
@@ -158,10 +163,11 @@ public class Alumno
     @Column(name = "FECHA_NACIMIENTO")
     @Temporal(TemporalType.DATE)
     private Date fechaNacimiento;
-    
-    @Column(name = "IDENTIFICADOR", precision = Campo.ID_CTA_INT,nullable = false)
-	@Digits(integer = Campo.ID_CTA_INT, fraction = 0)
-	@NotNull
+
+    @Column(name = "IDENTIFICADOR", precision = Campo.ID_CTA_INT,
+        nullable = false)
+    @Digits(integer = Campo.ID_CTA_INT, fraction = 0)
+    @NotNull
     private Integer identificador;
 
     @OneToMany(mappedBy = "alumno", fetch = FetchType.EAGER,
@@ -189,11 +195,11 @@ public class Alumno
     }
 
     public Alumno(final String codigo) {
-        setCodigo(codigo);
+        this.setCodigo(codigo);
     }
 
     public String getObservaciones() {
-        return observaciones;
+        return this.observaciones;
     }
 
     public void setObservaciones(final String observaciones) {
@@ -201,7 +207,7 @@ public class Alumno
     }
 
     public Boolean getTrabaja() {
-        return trabaja;
+        return this.trabaja;
     }
 
     public void setTrabaja(final Boolean trabaja) {
@@ -213,7 +219,7 @@ public class Alumno
     }
 
     public String getNombre() {
-        return nombre;
+        return this.nombre;
     }
 
     public void setNombre(final String nombre) {
@@ -221,7 +227,7 @@ public class Alumno
     }
 
     public String getApellidos() {
-        return apellidos;
+        return this.apellidos;
     }
 
     public void setApellidos(final String apellidos) {
@@ -229,16 +235,15 @@ public class Alumno
     }
 
     public String getDni() {
-        return codigo;
+        return this.codigo;
     }
 
     public void setDni(final String codigo) {
-        this.codigo = (codigo == null) ? null
-            : codigo.toUpperCase();
+        this.codigo = (codigo == null) ? null : codigo.toUpperCase();
     }
 
     public String getCodigo() {
-        return codigo;
+        return this.codigo;
     }
 
     public final void setCodigo(final String codigo) {
@@ -246,7 +251,7 @@ public class Alumno
     }
 
     public String getNiu() {
-        return niu;
+        return this.niu;
     }
 
     public void setNiu(final String niu) {
@@ -254,7 +259,7 @@ public class Alumno
     }
 
     public String getMovil() {
-        return movil;
+        return this.movil;
     }
 
     public void setMovil(final String movil) {
@@ -262,7 +267,7 @@ public class Alumno
     }
 
     public String getCorreo() {
-        return correo;
+        return this.correo;
     }
 
     public void setCorreo(final String correo) {
@@ -275,15 +280,15 @@ public class Alumno
             foto.setAlumno(this);
         }
 
-        fotos = setOne(fotos, foto);
+        this.fotos = this.setOne(this.fotos, foto);
     }
 
     public AlumnoImagen getFoto() {
-        return getOne(fotos);
+        return this.getOne(this.fotos);
     }
 
     public String getNacionalidad() {
-        return nacionalidad;
+        return this.nacionalidad;
     }
 
     public void setNacionalidad(final String nacionalidad) {
@@ -291,7 +296,7 @@ public class Alumno
     }
 
     public String getEmpresa() {
-        return empresa;
+        return this.empresa;
     }
 
     public void setEmpresa(final String empresa) {
@@ -299,7 +304,7 @@ public class Alumno
     }
 
     public String getHorario() {
-        return horario;
+        return this.horario;
     }
 
     public void setHorario(final String horario) {
@@ -307,7 +312,7 @@ public class Alumno
     }
 
     public String getInicioEstudios() {
-        return inicioEstudios;
+        return this.inicioEstudios;
     }
 
     public void setInicioEstudios(final String inicioEstudios) {
@@ -315,7 +320,7 @@ public class Alumno
     }
 
     public String getEstudiosAnteriores() {
-        return estudiosAnteriores;
+        return this.estudiosAnteriores;
     }
 
     public void setEstudiosAnteriores(final String estudiosAnteriores) {
@@ -324,7 +329,7 @@ public class Alumno
 
     @Override
     public Long getId() {
-        return id;
+        return this.id;
     }
 
     @Override
@@ -333,7 +338,7 @@ public class Alumno
     }
 
     public TipoSexo getSexo() {
-        return sexo;
+        return this.sexo;
     }
 
     public void setSexo(final TipoSexo sexo) {
@@ -341,42 +346,42 @@ public class Alumno
     }
 
     public Domicilio getDomicilioCurso() {
-        return getDomicilio(TipoDomicilio.CURSO);
+        return this.getDomicilio(TipoDomicilio.CURSO);
     }
 
     public void setDomicilioCurso(final Domicilio domicilioCurso) {
-        setDomicilio(domicilioCurso, TipoDomicilio.CURSO);
+        this.setDomicilio(domicilioCurso, TipoDomicilio.CURSO);
     }
 
     public Domicilio getDomicilioFamiliar() {
-        return getDomicilio(TipoDomicilio.FAMILIAR);
+        return this.getDomicilio(TipoDomicilio.FAMILIAR);
     }
 
     public void setDomicilioFamiliar(final Domicilio domicilioFamiliar) {
-        setDomicilio(domicilioFamiliar, TipoDomicilio.FAMILIAR);
+        this.setDomicilio(domicilioFamiliar, TipoDomicilio.FAMILIAR);
     }
 
     public Domicilio getDomicilioNacimiento() {
-        return getDomicilio(TipoDomicilio.NACIMIENTO);
+        return this.getDomicilio(TipoDomicilio.NACIMIENTO);
     }
 
     public void setDomicilioNacimiento(final Domicilio domicilioNacimiento) {
-        setDomicilio(domicilioNacimiento, TipoDomicilio.NACIMIENTO);
+        this.setDomicilio(domicilioNacimiento, TipoDomicilio.NACIMIENTO);
     }
 
     public Integer getIdentificador() {
-		return identificador;
-	}
+        return this.identificador;
+    }
 
-	public void setIdentificador(final Integer identificador) {
-		this.identificador = identificador;
-	}
+    public void setIdentificador(final Integer identificador) {
+        this.identificador = identificador;
+    }
 
-	public Domicilio getDomicilio(final TipoDomicilio tipo) {
+    public Domicilio getDomicilio(final TipoDomicilio tipo) {
 
-        if ((domicilios != null) && (domicilios.size() > 0)) {
+        if ((this.domicilios != null) && (this.domicilios.size() > 0)) {
 
-            for (final Domicilio dom : domicilios) {
+            for (final Domicilio dom : this.domicilios) {
 
                 if (dom.getTipo() == tipo) {
                     return dom;
@@ -390,12 +395,12 @@ public class Alumno
     private void setDomicilio(final Domicilio domicilio,
             final TipoDomicilio tipo) {
 
-        if (domicilios == null) {
-            domicilios = new HashSet<Domicilio>();
+        if (this.domicilios == null) {
+            this.domicilios = new HashSet<Domicilio>();
         }
 
         if (domicilio == null) {
-            domicilios.add(new Domicilio(this, tipo));
+            this.domicilios.add(new Domicilio(this, tipo));
         } else {
 
             if (domicilio.getAlumno() == null) {
@@ -403,12 +408,12 @@ public class Alumno
                 domicilio.setTipo(tipo);
             }
 
-            domicilios.add(domicilio);
+            this.domicilios.add(domicilio);
         }
     }
 
     public Set<AlumnoImagen> getFotos() {
-        return fotos;
+        return this.fotos;
     }
 
     public void setFotos(final Set<AlumnoImagen> fotos) {
@@ -416,7 +421,7 @@ public class Alumno
     }
 
     public Set<Domicilio> getDomicilios() {
-        return domicilios;
+        return this.domicilios;
     }
 
     public void setDomicilios(final Set<Domicilio> domicilios) {
@@ -425,10 +430,10 @@ public class Alumno
 
     public Date getFechaNacimiento() {
 
-        if (fechaNacimiento == null) {
+        if (this.fechaNacimiento == null) {
             return null;
         } else {
-            return new Date(fechaNacimiento.getTime());
+            return new Date(this.fechaNacimiento.getTime());
         }
     }
 
@@ -442,11 +447,11 @@ public class Alumno
     }
 
     public Boolean getEnviarCorreo() {
-        return enviarCorreo;
+        return this.enviarCorreo;
     }
 
     public boolean isEnviarCorreo() {
-        return enviarCorreo;
+        return this.enviarCorreo;
     }
 
     public void setEnviarCorreo(final Boolean enviarCorreo) {
@@ -460,7 +465,7 @@ public class Alumno
 
     @Override
     protected String[] equalizer() {
-        return EQUAL_FIELDS;
+        return Alumno.EQUAL_FIELDS;
     }
 
     @Override
